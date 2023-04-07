@@ -1,0 +1,30 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18.x
+      - run: npm ci
+      - run: npm run build
+      - env:
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
+        run: |
+          echo "$CRX_PRIVATE_KEY" > dist.pem
+          chmod 600 dist.pem
+          ./buildcrx.sh -d dist -p dist.pem -o .
+          zip -r magic-copy.zip dist
+      - name: Update release
+        uses: johnwbyrd/update-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: magic-copy.zip dist.crx
