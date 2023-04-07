@@ -1,0 +1,31 @@
+{
+  "name": "magic-copy",
+  "version": "1.0.0",
+  "description": "magic-copy",
+  "scripts": {
+    "watch": "webpack --config webpack/webpack.dev.js --watch",
+    "build": "webpack --config webpack/webpack.prod.js"
+  },
+  "author": "Kevin Wang <kevmo314@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevmo314/magic-copy"
+  },
+  "dependencies": {
+    "onnxruntime-web": "^1.14.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/chrome": "0.0.158",
+    "@types/offscreencanvas": "^2019.7.0",
+    "@types/react": "^18.0.29",
+    "@types/react-dom": "^18.0.11",
+    "copy-webpack-plugin": "^9.0.1",
+    "ts-loader": "^8.0.0",
+    "typescript": "^4.4.3 ",
+    "webpack": "^5.76.0",
+    "webpack-cli": "^4.0.0",
+    "webpack-merge": "^5.0.0"
+  }
+}

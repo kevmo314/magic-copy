@@ -1,0 +1,41 @@
+{
+  "name": "Magic Copy",
+  "description": "A Chrome extension to add a 'Magic Copy' option to the context menu, which copies selective parts of the image.",
+  "version": "1.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "icon16.png",
+    "32": "icon32.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "background": {
+    "service_worker": "js/background.js"
+  },
+  "permissions": ["contextMenus"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["js/content_script.js"],
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx",
+        "ort-wasm-simd-threaded.wasm",
+        "ort-wasm-simd.wasm",
+        "ort-wasm-threaded.wasm",
+        "ort-wasm.wasm"
+      ],
+      "matches": ["<all_urls>"],
+      "use_dynamic_url": true
+    }
+  ]
+}
