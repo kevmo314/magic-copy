@@ -12,7 +12,7 @@ https://user-images.githubusercontent.com/511342/230546504-1ed11d08-3dda-422c-b3
 
 Alternatively, the extension can be installed manually:
 
-1. Download the repository as a ZIP file.
+1. Download the latest `magic-copy.zip` from [releases](https://github.com/kevmo314/magic-copy/releases).
 2. Extract the ZIP file.
 3. In Chrome, go to `chrome://extensions/`, enable "Developer mode", and click "Load unpacked".
 4. Select the folder where the extension was extracted.
