@@ -20,3 +20,23 @@ Alternatively, the extension can be installed manually:
 ## Implementation
 
 This extension uses the same procedure as the [Segment Anything Model demo](https://segment-anything.com/demo) to extract a foreground object from an image. The only difference is that the extracted object is copied to the clipboard instead of being displayed on the page.
+
+## Building
+
+### Manually
+
+Build the extension with `npm` and then run the included `./buildcrx.sh` script to generate the `crx` file:
+
+```sh
+npm ci
+npm run build
+./buildcrx.sh -d dist
+```
+
+### Docker
+
+A `Dockerfile` is provided to cleanly build the `crx` file. To build the extension, run:
+
+```sh
+docker build --output out .
+```
