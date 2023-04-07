@@ -236,37 +236,6 @@ function Editor({
       </FrameSizeContext.Consumer>
     </>
   );
-
-  // // const afterONNX = Date.now();
-  // // console.log(`ONNX took ${afterONNX - beforeONNX}ms`);
-  // const output = results[model.outputNames[0]];
-  // if (hasClicked) {
-  //   // const beforeSVG = Date.now();
-  //   const pred_mask = results[model.outputNames[1]];
-  //   setPredMask(pred_mask);
-  //   if (!predMasksHistory) {
-  //     setPredMasks([...(predMasks || []), pred_mask]);
-  //   }
-  //   const svgStr = traceOnnxMaskToSVG(
-  //     output.data,
-  //     output.dims[1],
-  //     output.dims[0]
-  //   );
-  //   setSVG(svgStr);
-  //   setMask(output.data);
-  //   // const afterSVG = Date.now();
-  //   // console.log(`SVG took ${afterSVG - beforeSVG}ms`);
-  // } else {
-  //   // const beforeMask = Date.now();
-  //   setMaskImg(rleToImage(output.data, output.dims[0], output.dims[1]));
-  //   // const afterMask = Date.now();
-  //   // console.log(`Mask took ${afterMask - beforeMask}ms`);
-  // }
-  // setClick(null);
-  // setIsLoading(false);
-  // setIsModelLoaded((prev) => {
-  //   return { ...prev, boxModel: true };
-  // });
 }
 
 function Renderer({
