@@ -34,8 +34,3 @@ jobs:
         with:
           name: magic-copy.crx
           path: dist.crx
-      - name: Update release
-        uses: johnwbyrd/update-release@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          files: magic-copy.zip
