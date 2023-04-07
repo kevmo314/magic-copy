@@ -23,6 +23,7 @@ jobs:
           echo "$CRX_PRIVATE_KEY" > dist.pem
           chmod 600 dist.pem
           ./buildcrx.sh -d dist -p dist.pem -o .
+          zip -r magic-copy.zip dist
       - name: Upload zip
         uses: actions/upload-artifact@v2
         with:
@@ -33,3 +34,8 @@ jobs:
         with:
           name: magic-copy.crx
           path: dist.crx
+      - name: Update release
+        uses: johnwbyrd/update-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: magic-copy.zip
