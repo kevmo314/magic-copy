@@ -17,4 +17,14 @@ jobs:
           node-version: 18.x
       - run: npm ci
       - run: npm run build
-      - run: ./buildcrx.sh -d dist -p dist.pem -o .
+      - env:
+          CRX_PRIVATE_KEY: ${{ secrets.CRX_PRIVATE_KEY }}
+        run: |
+          echo "$CRX_PRIVATE_KEY" > dist.pem
+          chmod 600 dist.pem
+          ./buildcrx.sh -d dist -p dist.pem -o .
+      - name: Upload crx
+        uses: actions/upload-artifact@v2
+        with:
+          name: magic-copy.crx
+          path: dist.crx
