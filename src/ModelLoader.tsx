@@ -1,4 +1,4 @@
-import { env, InferenceSession, Tensor } from "onnxruntime-web";
+import { Tensor } from "onnxruntime-web";
 import React from "react";
 import { FrameSizeContext } from "./FrameSizeContext";
 import { traceOnnxMaskToSVG } from "./lib/mask_utils";
@@ -10,7 +10,6 @@ export default function ModelLoader({ image }: { image: Blob }) {
   const [bitmap, setBitmap] = React.useState<ImageBitmap>();
   const [resized, setResized] = React.useState<Blob>();
   const [tensor, setTensor] = React.useState<Tensor>();
-  const [model, setModel] = React.useState<InferenceSession>();
 
   React.useEffect(() => {
     createImageBitmap(image).then(setBitmap);
@@ -48,27 +47,12 @@ export default function ModelLoader({ image }: { image: Blob }) {
       .then(setTensor);
   }, [resized]);
 
-  React.useEffect(() => {
-    const url = chrome.runtime.getURL(
-      "interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx"
-    );
-    env.wasm.wasmPaths = {
-      "ort-wasm-simd-threaded.wasm": chrome.runtime.getURL(
-        "ort-wasm-simd-threaded.wasm"
-      ),
-      "ort-wasm-simd.wasm": chrome.runtime.getURL("ort-wasm-simd.wasm"),
-      "ort-wasm-threaded.wasm": chrome.runtime.getURL("ort-wasm-threaded.wasm"),
-      "ort-wasm.wasm": chrome.runtime.getURL("ort-wasm.wasm"),
-    };
-    InferenceSession.create(url).then(setModel);
-  }, []);
-
-  if (!model || !tensor || !bitmap) {
+  if (!tensor || !bitmap) {
     return <div>Loading...</div>;
   }
 
   return (
-    <Editor tensor={tensor} model={model} bitmap={bitmap}>
+    <Editor tensor={tensor} bitmap={bitmap}>
       <img
         src={URL.createObjectURL(image)}
         style={{
@@ -83,11 +67,9 @@ export default function ModelLoader({ image }: { image: Blob }) {
 function Editor({
   children,
   tensor,
-  model,
   bitmap,
 }: React.PropsWithChildren<{
   tensor: Tensor;
-  model: InferenceSession;
   bitmap: ImageBitmap;
 }>) {
   const [output, setOutput] = React.useState<Tensor>();
@@ -96,9 +78,23 @@ function Editor({
   const [mode, setMode] = React.useState<"edit" | "preview">("edit");
   const [rendered, setRendered] = React.useState<Blob | null>(null);
 
+  const sandboxRef = React.useRef<HTMLIFrameElement>(null);
+
   const uploadScale = UPLOAD_IMAGE_SIZE / Math.max(bitmap.height, bitmap.width);
 
   React.useEffect(() => {
+    const listener = (event: MessageEvent) => {
+      setOutput(event.data.output);
+      setPredMasks((predMasks) => [...predMasks, event.data.mask]);
+    };
+    window.addEventListener("message", listener);
+    return () => window.removeEventListener("message", listener);
+  }, []);
+
+  React.useEffect(() => {
+    if (!sandboxRef.current) {
+      return;
+    }
     const w = bitmap.width;
     const h = bitmap.height;
     const IMAGE_SIZE = 500;
@@ -116,7 +112,9 @@ function Editor({
       width: w,
       height: h,
     };
-    if (clicks.length === 0) return;
+    if (clicks.length === 0) {
+      return;
+    }
     const feeds = modelData({
       clicks: clicks.map((click) => ({
         x: click.x,
@@ -130,15 +128,11 @@ function Editor({
       last_pred_mask:
         predMasks.length > 0 ? predMasks[predMasks.length - 1] : null,
     });
-    if (!feeds) return;
-    model.run(feeds).then((results) => {
-      setOutput(results[model.outputNames[0]]);
-      setPredMasks((predMasks) => [
-        ...predMasks,
-        results[model.outputNames[1]],
-      ]);
-    });
-  }, [model, tensor, bitmap, clicks]);
+    if (!feeds) {
+      return;
+    }
+    sandboxRef.current.contentWindow?.postMessage(feeds, "*");
+  }, [tensor, bitmap, clicks, sandboxRef.current]);
 
   return (
     <>
@@ -150,6 +144,11 @@ function Editor({
           padding: "5px",
         }}
       >
+        <iframe
+          ref={sandboxRef}
+          src={chrome.runtime.getURL("sandbox.html")}
+          style={{ display: "none" }}
+        ></iframe>
         {/* toolbar */}
         <div>
           <button onClick={() => setMode("edit")} disabled={mode === "edit"}>
