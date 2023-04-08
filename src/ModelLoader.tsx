@@ -260,8 +260,6 @@ function Renderer({
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [isDrawn, setIsDrawn] = React.useState(false);
 
-  console.log(canvasScale, svgScale);
-
   React.useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -279,7 +277,6 @@ function Renderer({
     // draw svg on canvas
     const path = new Path2D(svg);
     const scale = canvasScale * svgScale;
-    console.log(svgScale);
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
     if (mode === "edit") {
       ctx.fillStyle = "rgba(0, 0, 255, 0.4)";

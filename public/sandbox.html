@@ -1,34 +1,6 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="./ort.min.js"></script>
+    <script src="./js/sandbox.js"></script>
   </head>
-  <body>
-    <script>
-      window.addEventListener("message", async function (event) {
-        // const url = chrome.runtime.getURL(
-        //   "interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx"
-        // );
-        // env.wasm.wasmPaths = {
-        //   "ort-wasm-simd-threaded.wasm": chrome.runtime.getURL(
-        //     "ort-wasm-simd-threaded.wasm"
-        //   ),
-        //   "ort-wasm-simd.wasm": chrome.runtime.getURL("ort-wasm-simd.wasm"),
-        //   "ort-wasm-threaded.wasm": chrome.runtime.getURL(
-        //     "ort-wasm-threaded.wasm"
-        //   ),
-        //   "ort-wasm.wasm": chrome.runtime.getURL("ort-wasm.wasm"),
-        // };
-        const model = await ort.InferenceSession.create(
-          "./interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx"
-        );
-
-        const results = await model.run(event.data);
-
-        console.log(results);
-
-        event.source.postMessage(results, event.origin);
-      });
-    </script>
-  </body>
 </html>
