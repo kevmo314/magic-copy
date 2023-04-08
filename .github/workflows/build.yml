@@ -25,7 +25,7 @@ jobs:
           echo "$CRX_PRIVATE_KEY" > dist.pem
           chmod 600 dist.pem
           ./buildcrx.sh -d dist -p dist.pem -o .
-          zip -r magic-copy.zip dist
+          cd dist && zip -r ../magic-copy.zip .
       - name: Upload zip
         uses: actions/upload-artifact@v2
         with:
