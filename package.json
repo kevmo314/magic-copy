@@ -19,7 +19,7 @@
   "devDependencies": {
     "@types/chrome": "0.0.158",
     "@types/offscreencanvas": "^2019.7.0",
-    "@types/react": "^18.0.29",
+    "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
     "copy-webpack-plugin": "^9.0.1",
     "ts-loader": "^8.0.0",
