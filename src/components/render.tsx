@@ -10,8 +10,10 @@ export function render(image: Blob) {
   if (activeScrim) {
     activeScrim.remove();
   }
+  const host = document.createElement("div");
+  document.body.appendChild(host);
   const scrim = document.createElement("div");
-  document.body.appendChild(scrim);
+  host.attachShadow({ mode: "closed" }).appendChild(scrim);
   activeScrim = scrim;
   activeRoot = createRoot(scrim);
   activeRoot.render(

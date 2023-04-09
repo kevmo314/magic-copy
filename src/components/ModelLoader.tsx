@@ -1,8 +1,8 @@
 import { Tensor } from "onnxruntime-web";
 import React from "react";
 import { FrameSizeContext } from "./FrameSizeContext";
-import { traceOnnxMaskToSVG } from "./lib/mask_utils";
-import { modelData } from "./models";
+import { traceOnnxMaskToSVG } from "../lib/mask_utils";
+import { modelData } from "../lib/models";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
@@ -51,27 +51,10 @@ export default function ModelLoader({ image }: { image: Blob }) {
     return <div>Loading...</div>;
   }
 
-  return (
-    <Editor tensor={tensor} bitmap={bitmap}>
-      <img
-        src={URL.createObjectURL(image)}
-        style={{
-          maxWidth: "100%",
-          maxHeight: "100%",
-        }}
-      />
-    </Editor>
-  );
+  return <Editor tensor={tensor} bitmap={bitmap} />;
 }
 
-function Editor({
-  children,
-  tensor,
-  bitmap,
-}: React.PropsWithChildren<{
-  tensor: Tensor;
-  bitmap: ImageBitmap;
-}>) {
+function Editor({ tensor, bitmap }: { tensor: Tensor; bitmap: ImageBitmap }) {
   const [output, setOutput] = React.useState<Tensor>();
   const [predMasks, setPredMasks] = React.useState<Tensor[]>([]);
   const [clicks, setClicks] = React.useState<{ x: number; y: number }[]>([]);
@@ -227,9 +210,7 @@ function Editor({
               }}
               onRenderedImage={(blob) => setRendered(blob)}
               mode={mode}
-            >
-              {children}
-            </Renderer>
+            />
           );
         }}
       </FrameSizeContext.Consumer>
@@ -238,7 +219,6 @@ function Editor({
 }
 
 function Renderer({
-  children,
   tensor,
   predMasks,
   image,
@@ -247,7 +227,7 @@ function Renderer({
   onMaskClick,
   onRenderedImage,
   mode,
-}: React.PropsWithChildren<{
+}: {
   tensor?: Tensor;
   predMasks: Tensor[];
   image: ImageBitmap;
@@ -256,9 +236,8 @@ function Renderer({
   onMaskClick: (x: number, y: number) => void;
   onRenderedImage: (blob: Blob | null) => void;
   mode: "edit" | "preview";
-}>) {
+}) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const [isDrawn, setIsDrawn] = React.useState(false);
 
   React.useEffect(() => {
     const canvas = canvasRef.current;
