@@ -103,6 +103,8 @@ function Editor({ tensor, bitmap }: { tensor: Tensor; bitmap: ImageBitmap }) {
       height: h,
     };
     if (clicks.length === 0) {
+      setOutput(undefined);
+      setPredMasks([]);
       return;
     }
     const feeds = modelData({
@@ -195,7 +197,6 @@ function Editor({ tensor, bitmap }: { tensor: Tensor; bitmap: ImageBitmap }) {
           return (
             <Renderer
               tensor={output}
-              predMasks={predMasks}
               image={bitmap}
               canvasScale={scaleToFit}
               svgScale={
@@ -227,7 +228,6 @@ function Editor({ tensor, bitmap }: { tensor: Tensor; bitmap: ImageBitmap }) {
 
 function Renderer({
   tensor,
-  predMasks,
   image,
   canvasScale,
   svgScale,
@@ -236,7 +236,6 @@ function Renderer({
   mode,
 }: {
   tensor?: Tensor;
-  predMasks: Tensor[];
   image: ImageBitmap;
   canvasScale: number;
   svgScale: number;
