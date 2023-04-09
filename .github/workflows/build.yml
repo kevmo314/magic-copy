@@ -12,9 +12,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js 18.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
       - run: npm ci
@@ -27,12 +27,12 @@ jobs:
           ./buildcrx.sh -d dist -p dist.pem -o .
           cd dist && zip -r ../magic-copy.zip .
       - name: Upload zip
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: magic-copy
           path: dist
       - name: Upload crx
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: magic-copy.crx
           path: dist.crx
