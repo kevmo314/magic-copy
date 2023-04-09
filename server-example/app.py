@@ -21,4 +21,4 @@ def index():
     return flask.jsonify([base64.b64encode(image_embedding).decode('ascii')])
     
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8045)
+    app.run(host='0.0.0.0', port=8000)
