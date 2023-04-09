@@ -31,16 +31,23 @@ export default function ModelLoader({ image }: { image: Blob }) {
 
   React.useEffect(() => {
     if (!resized) return;
-    fetch(
-      "https://model-zoo.metademolab.com/predictions/segment_everything_box_model",
-      {
-        method: "POST",
-        body: resized,
-      }
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        const uint8arr = Uint8Array.from(atob(json[0]), (c) => c.charCodeAt(0));
+    resized
+      .arrayBuffer()
+      .then(
+        (buffer) =>
+          new Promise<string>((resolve) => {
+            const data = {
+              action: "embeddings",
+              embeddings: {
+                data: Array.from(new Uint8Array(buffer)),
+                type: resized.type,
+              },
+            };
+            chrome.runtime.sendMessage(data, resolve);
+          })
+      )
+      .then((data) => {
+        const uint8arr = Uint8Array.from(atob(data), (c) => c.charCodeAt(0));
         const float32Arr = new Float32Array(uint8arr.buffer);
         return new Tensor("float32", float32Arr, [1, 256, 64, 64]);
       })

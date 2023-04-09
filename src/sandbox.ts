@@ -12,5 +12,5 @@ window.addEventListener("message", async function (event) {
   );
   const results = await model.run(event.data);
 
-  event.source?.postMessage(results, { targetOrigin: event.origin });
+  event.source?.postMessage(results, "*" as any);
 });
