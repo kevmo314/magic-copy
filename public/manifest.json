@@ -10,7 +10,7 @@
     "128": "icon128.png"
   },
   "background": {
-    "service_worker": "js/background.js"
+    "scripts": ["js/background.js"]
   },
   "permissions": ["contextMenus", "storage"],
   "host_permissions": ["<all_urls>"],
@@ -42,5 +42,10 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": false
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "magic-copy@kevmo314.com"
+    }
   }
 }

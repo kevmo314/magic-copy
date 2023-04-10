@@ -8,6 +8,8 @@ https://user-images.githubusercontent.com/511342/230546504-1ed11d08-3dda-422c-b3
 
 [![Available on the Chrome Web Store](https://storage.googleapis.com/web-dev-uploads/image/WlD8wC6g8khYWPJUsQceQkhXSlv1/UV4C4ybeBTsZt43U4xis.png)](https://chrome.google.com/webstore/detail/nnifclicibdhgakebbnbfmomniihfmkg)
 
+[![Available on the Firefox Add-ons Store](https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png)](https://addons.mozilla.org/en-US/firefox/addon/magic-copy/)
+
 (This might not be available yet, as the extension is still in review.)
 
 Alternatively, the extension can be installed manually:
