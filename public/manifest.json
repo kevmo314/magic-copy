@@ -10,7 +10,7 @@
     "128": "icon128.png"
   },
   "background": {
-    "scripts": ["js/background.js"]
+    "service_worker": "js/background.js"
   },
   "permissions": ["contextMenus", "storage"],
   "host_permissions": ["<all_urls>"],
