@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-      - uses: paulhatch/semantic-version@v5
+      - uses: paulhatch/semantic-version@v5.0.2
         id: semantic
       - run: |
           sed -i "s/\"version\": \".*\"/\"version\": \"${{ steps.semantic.outputs.version }}\"/" public/manifest.json
