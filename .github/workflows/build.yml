@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     tags:
-      - '*'
+      - "*"
   pull_request:
     branches: [main]
 
@@ -17,6 +17,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+      - uses: paulhatch/semantic-version@v4
+        id: semantic
+      - run: |
+          sed -i "s/\"version\": \".*\"/\"version\": \"${{ steps.semantic.outputs.version }}\"/" public/manifest.json
+          sed -i "s/\"version\": \".*\"/\"version\": \"${{ steps.semantic.outputs.version }}\"/" package.json
       - run: npm ci
       - run: npm run build
       - env:
@@ -38,6 +43,6 @@ jobs:
           path: dist.crx
       - name: Upload to release
         uses: softprops/action-gh-release@v1
-        if: ${{startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
         with:
-          files: magic-copy.zip
+          files: magic-copy-chrome.zip

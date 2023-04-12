@@ -1,7 +1,7 @@
 {
   "name": "Magic Copy",
   "description": "A Chrome extension to add a 'Magic Copy' option to the context menu, which copies selective parts of the image.",
-  "version": "1.1.0",
+  "version": "0.0.1",
   "manifest_version": 3,
   "icons": {
     "16": "icon16.png",
