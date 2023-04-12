@@ -10,7 +10,7 @@ https://user-images.githubusercontent.com/511342/230546504-1ed11d08-3dda-422c-b3
 
 [![Available on the Firefox Add-ons Store](https://extensionworkshop.com/assets/img/documentation/publish/get-the-addon-178x60px.dad84b42.png)](https://addons.mozilla.org/en-US/firefox/addon/magic-copy/)
 
-(This might not be available yet, as the extension is still in review. If you would like to be notified when they do, subscribe to the [Chrome](https://github.com/kevmo314/magic-copy/issues/17) or [Firefox](https://github.com/kevmo314/magic-copy/issues/18) issues.)
+(This might not be available yet, as the extension is still in review. If you would like to be notified when they do, subscribe to the [Chrome](https://github.com/kevmo314/magic-copy/issues/16) or [Firefox](https://github.com/kevmo314/magic-copy/issues/17) issues.)
 
 Alternatively, the extension can be installed manually:
 
