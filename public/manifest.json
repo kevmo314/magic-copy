@@ -18,7 +18,6 @@
     {
       "matches": ["<all_urls>"],
       "js": ["js/content_script.js"],
-      "all_frames": true,
       "match_about_blank": true
     }
   ],
