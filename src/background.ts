@@ -29,14 +29,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, respond) {
     const body = new Blob([new Uint8Array(message.embeddings.data)], {
       type: message.embeddings.type,
     });
-    const endpoint = chrome.storage.sync.get(
-      { endpoint: DEFAULT_ENDPOINT },
-      function (result) {
-        fetch(result.endpoint, { method: "POST", body })
-          .then((response) => response.json())
-          .then((result) => respond(result[0]));
-      }
-    );
+    chrome.storage.sync.get({ endpoint: DEFAULT_ENDPOINT }, function (result) {
+      fetch(result.endpoint, { method: "POST", body })
+        .then((response) => response.json())
+        .then((result) => respond(result[0]));
+    });
     return true;
   }
 });
