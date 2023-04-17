@@ -12,7 +12,7 @@
   "background": {
     "service_worker": "js/background.js"
   },
-  "permissions": ["contextMenus", "storage"],
+  "permissions": ["contextMenus", "storage", "file:///*"],
   "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
