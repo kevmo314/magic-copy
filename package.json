@@ -17,7 +17,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.228",
+    "@types/chrome": "0.0.231",
     "@types/offscreencanvas": "^2019.7.0",
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
