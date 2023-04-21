@@ -146,10 +146,10 @@ function Renderer({
       return;
     }
     if (mode === "edit") {
-      ctx.fillStyle = "rgba(0, 0, 255, 0.4)";
-      ctx.globalCompositeOperation = "color-dodge";
+      ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
+      ctx.globalCompositeOperation = "multiply";
     } else {
-      ctx.fillStyle = "rgba(0, 0, 0, 1)";
+      ctx.fillStyle = "rgba(255, 255, 255, 1)";
       ctx.globalCompositeOperation = "destination-in";
     }
     for (const path of traced) {
