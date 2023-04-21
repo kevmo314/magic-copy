@@ -14,6 +14,8 @@
  *       - Convert path to an SVG string and add to final output
  */
 
+import { Path } from "./models";
+
 /**
  * Helper function
  * Converts string representation of point (used as Map key) back into [x, y] array
@@ -21,7 +23,7 @@
  * @returns {Array<number>} [x, y]
  */
 const splitPointKey = (point: string) => {
-  return point.split(" ").map((a: string) => parseInt(a));
+  return point.split(" ").map((a: string) => parseInt(a)) as [number, number];
 };
 
 /**
@@ -273,7 +275,7 @@ export const generatePolygonSegments = (rleMask: any, height: any) => {
  * @param {Map<string, Set<string>>} polySegments output of generatePolygonSegments
  * @returns {string} SVG data string for display
  */
-export const convertSegmentsToSVG = (polySegments: any) => {
+export const convertSegmentsToSVG = (polySegments: any, scale: number) => {
   // 1. Generate the closed polygon paths (as lists of points) in order from outermost to innermost
   const paths = [];
   while (polySegments.size) {
@@ -316,7 +318,9 @@ export const convertSegmentsToSVG = (polySegments: any) => {
     // Count how many other paths a point contained inside this path is contained within
     //  if odd number: should be clockwise, even number: should be counter-clockwise
     let shouldBeClockwise = false;
-    const [sampleX, sampleY] = path[0];
+    let [sampleX, sampleY] = path[0];
+    sampleX *= scale;
+    sampleY *= scale;
     for (const otherPath of renderedPaths) {
       if (ctx!.isPointInPath(otherPath, sampleX + 0.5, sampleY + 0.5))
         shouldBeClockwise = !shouldBeClockwise;
@@ -328,9 +332,10 @@ export const convertSegmentsToSVG = (polySegments: any) => {
     // Build the SVG data string for this path
     const stringPoints = path
       .slice(1)
-      .map(([x, y]) => `${x} ${y}`)
+      .map(([x, y]) => `${x * scale} ${y * scale}`)
       .join(" ");
-    const svgStr = `M${path[0][0]} ${path[0][1]} L` + stringPoints;
+    const svgStr =
+      `M${path[0][0] * scale} ${path[0][1] * scale} L` + stringPoints;
     svgStrings.push(svgStr); // Add to final SVG string return value
 
     // Add a new Path2D to the canvas to be able to call isPointInPath for the remaining paths

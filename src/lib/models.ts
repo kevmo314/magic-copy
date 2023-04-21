@@ -1,5 +1,8 @@
 import { Tensor } from "onnxruntime-web";
 
+export type Path = [number, number][];
+export type Mask = number[][];
+
 interface modelInputProps {
   x: number;
   y: number;
