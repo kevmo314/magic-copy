@@ -158,18 +158,41 @@ function Renderer({
     ctx.restore();
   }, [image, traced, mode, canvasScale, svgScale]);
 
+  const width = Math.round(image.width * canvasScale);
+  const height = Math.round(image.height * canvasScale);
+
   return (
-    <canvas
-      ref={canvasRef}
-      width={image.width * canvasScale}
-      height={image.height * canvasScale}
-      onClick={(e) => {
-        if (mode !== "edit") return;
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        onMaskClick(x, y);
+    <div
+      style={{
+        position: "relative",
+        width: width,
+        height: height,
       }}
-    />
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -1,
+          width: width,
+          height: height,
+          background:
+            "repeating-conic-gradient(#AAAAAA 0% 25%, white 0% 50%) 50% / 20px 20px",
+        }}
+      ></div>
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        onClick={(e) => {
+          if (mode !== "edit") return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          onMaskClick(x, y);
+        }}
+      />
+    </div>
   );
 }
