@@ -129,6 +129,7 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
     };
     if (clicks.length === 0) {
       setMask(null);
+      setRenderedImage(null);
       predMasksRef.current.splice(0, predMasksRef.current.length);
       return;
     }

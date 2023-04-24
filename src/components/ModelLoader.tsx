@@ -1,8 +1,7 @@
-import { Tensor } from "onnxruntime-web";
 import React from "react";
 import { FrameSizeContext } from "./FrameSizeContext";
-import { traceOnnxMaskToSVG } from "../lib/mask_utils";
 import useImageEditor from "./hooks/useImageEditor";
+import { LeftToolbar, RightToolbar } from "./Toolbars";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
@@ -33,49 +32,29 @@ export default function ModelLoader({ image }: { image: Blob }) {
           src={chrome.runtime.getURL("sandbox.html")}
           style={{ display: "none" }}
         ></iframe>
-        {/* toolbar */}
-        <div>
-          <button onClick={() => setMode("edit")} disabled={mode === "edit"}>
-            Edit
-          </button>
-          <button
-            onClick={() => setMode("preview")}
-            disabled={mode === "preview"}
-          >
-            Preview
-          </button>
-        </div>
-        <div>
-          <button onClick={onUndo} disabled={!isUndoable}>
-            Undo
-          </button>
-          <button
-            onClick={() => {
-              if (!renderedImage) return;
-              navigator.clipboard.write([
-                new ClipboardItem({
-                  // The key is determined dynamically based on the blob's type.
-                  [renderedImage.type]: renderedImage,
-                } as any),
-              ]);
-            }}
-            disabled={!renderedImage}
-          >
-            Copy
-          </button>
-          <button
-            onClick={() => {
-              if (!renderedImage) return;
-              const a = document.createElement("a");
-              a.href = URL.createObjectURL(renderedImage);
-              a.download = "image.png";
-              a.click();
-            }}
-            disabled={!renderedImage}
-          >
-            Download
-          </button>
-        </div>
+        <LeftToolbar mode={mode} onModeChange={setMode} />
+        <RightToolbar
+          onUndo={onUndo}
+          isUndoDisabled={!isUndoable}
+          onCopy={() => {
+            if (!renderedImage) return;
+            navigator.clipboard.write([
+              new ClipboardItem({
+                // The key is determined dynamically based on the blob's type.
+                [renderedImage.type]: renderedImage,
+              } as any),
+            ]);
+          }}
+          isCopyDisabled={!renderedImage}
+          onDownload={() => {
+            if (!renderedImage) return;
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(renderedImage);
+            a.download = "image.png";
+            a.click();
+          }}
+          isDownloadDisabled={!renderedImage}
+        />
       </div>
       <FrameSizeContext.Consumer>
         {(frame) => {
