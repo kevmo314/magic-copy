@@ -5,6 +5,53 @@ import { modelData } from "../../lib/models";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
+function trim(c: OffscreenCanvas) {
+  const ctx = c.getContext("2d");
+  if (ctx === null) {
+    throw new Error("Could not get context");
+  }
+  const pixels = ctx.getImageData(0, 0, c.width, c.height);
+  const bound = {
+    top: c.height,
+    left: c.width,
+    right: 0,
+    bottom: 0,
+  };
+
+  for (let i = 0; i < pixels.data.length; i += 4) {
+    if (pixels.data[i + 3] === 0) {
+      continue;
+    }
+    const x = (i / 4) % c.width;
+    const y = ~~(i / 4 / c.width);
+
+    if (y < bound.top) {
+      bound.top = y;
+    }
+    if (x < bound.left) {
+      bound.left = x;
+    }
+    if (x > bound.right) {
+      bound.right = x;
+    }
+    if (y > bound.bottom) {
+      bound.bottom = y;
+    }
+  }
+
+  const trimHeight = bound.bottom - bound.top,
+    trimWidth = bound.right - bound.left,
+    trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+
+  const copy = new OffscreenCanvas(trimWidth, trimHeight);
+  const copyCtx = copy.getContext("2d");
+  if (copyCtx === null) {
+    throw new Error("Could not get context");
+  }
+  copyCtx.putImageData(trimmed, 0, 0);
+  return copy;
+}
+
 export default function useImageEditor(image: Blob, sandbox: Window | null) {
   const [bitmap, setBitmap] = React.useState<ImageBitmap | null>(null);
   const [embeddings, setEmbeddings] = React.useState<Tensor | null>(null);
@@ -132,7 +179,7 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
     for (const path of traced) {
       offscreenCtx.fill(new Path2D(path));
     }
-    offscreen.convertToBlob({ type: "image/png" }).then(setRenderedImage);
+    trim(offscreen).convertToBlob({ type: "image/png" }).then(setRenderedImage);
   }, [bitmap, traced]);
 
   return {
