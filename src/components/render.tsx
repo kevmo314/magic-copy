@@ -25,6 +25,7 @@ export function render(image: Blob) {
       }}
     >
       <style type="text/css">
+        {`
         .magic-copy-toolbar {
           background: white;
           border-radius: 6px;
@@ -54,7 +55,7 @@ export function render(image: Blob) {
 
         .magic-copy-toolbar button:hover {
           background: #eeeeee;
-        }
+        }`}
       </style>
       <ModelLoader image={image} />
     </Popup>
