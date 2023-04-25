@@ -40,8 +40,16 @@ function trim(c: OffscreenCanvas) {
   }
 
   const trimHeight = bound.bottom - bound.top,
-    trimWidth = bound.right - bound.left,
-    trimmed = ctx.getImageData(bound.left, bound.top, trimWidth, trimHeight);
+    trimWidth = bound.right - bound.left;
+  if (trimWidth <= 0 || trimHeight <= 0) {
+    return null;
+  }
+  const trimmed = ctx.getImageData(
+    bound.left,
+    bound.top,
+    trimWidth,
+    trimHeight
+  );
 
   const copy = new OffscreenCanvas(trimWidth, trimHeight);
   const copyCtx = copy.getContext("2d");
@@ -172,7 +180,9 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
       return;
     }
     const offscreen = new OffscreenCanvas(bitmap.width, bitmap.height);
-    const offscreenCtx = offscreen.getContext("2d");
+    const offscreenCtx = offscreen.getContext("2d", {
+      willReadFrequently: true,
+    });
     if (!offscreenCtx) return;
     offscreenCtx.drawImage(bitmap, 0, 0);
     offscreenCtx.fillStyle = "rgba(0, 0, 0, 1)";
@@ -180,7 +190,12 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
     for (const path of traced) {
       offscreenCtx.fill(new Path2D(path));
     }
-    trim(offscreen).convertToBlob({ type: "image/png" }).then(setRenderedImage);
+    const trimmed = trim(offscreen);
+    if (trimmed == null) {
+      setRenderedImage(null);
+    } else {
+      trimmed.convertToBlob({ type: "image/png" }).then(setRenderedImage);
+    }
   }, [bitmap, traced]);
 
   return {
