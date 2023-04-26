@@ -5,59 +5,41 @@ import { modelData } from "../../lib/models";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
-function trim(c: OffscreenCanvas) {
-  const ctx = c.getContext("2d");
-  if (ctx === null) {
-    throw new Error("Could not get context");
-  }
-  const pixels = ctx.getImageData(0, 0, c.width, c.height);
+function trim(pixels: ImageData) {
   const bound = {
-    top: c.height,
-    left: c.width,
+    top: pixels.height,
+    left: pixels.width,
     right: 0,
     bottom: 0,
   };
 
-  for (let i = 0; i < pixels.data.length; i += 4) {
-    if (pixels.data[i + 3] === 0) {
-      continue;
-    }
-    const x = (i / 4) % c.width;
-    const y = ~~(i / 4 / c.width);
-
-    if (y < bound.top) {
-      bound.top = y;
-    }
-    if (x < bound.left) {
-      bound.left = x;
-    }
-    if (x > bound.right) {
-      bound.right = x;
-    }
-    if (y > bound.bottom) {
-      bound.bottom = y;
+  for (let x = 0; x < pixels.width; x++) {
+    for (let y = 0; y < pixels.height; y++) {
+      const i = (y * pixels.width + x) * 4;
+      if (pixels.data[i + 3] === 0) {
+        continue;
+      }
+      if (y < bound.top) {
+        bound.top = y;
+      }
+      if (x < bound.left) {
+        bound.left = x;
+      }
+      if (x > bound.right) {
+        bound.right = x;
+      }
+      if (y > bound.bottom) {
+        bound.bottom = y;
+      }
     }
   }
 
-  const trimHeight = bound.bottom - bound.top,
-    trimWidth = bound.right - bound.left;
+  const trimHeight = bound.bottom - bound.top + 1,
+    trimWidth = bound.right - bound.left + 1;
   if (trimWidth <= 0 || trimHeight <= 0) {
     return null;
   }
-  const trimmed = ctx.getImageData(
-    bound.left,
-    bound.top,
-    trimWidth,
-    trimHeight
-  );
-
-  const copy = new OffscreenCanvas(trimWidth, trimHeight);
-  const copyCtx = copy.getContext("2d");
-  if (copyCtx === null) {
-    throw new Error("Could not get context");
-  }
-  copyCtx.putImageData(trimmed, 0, 0);
-  return copy;
+  return [bound.left, bound.top, trimWidth, trimHeight];
 }
 
 export default function useImageEditor(image: Blob, sandbox: Window | null) {
@@ -184,17 +166,26 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
       willReadFrequently: true,
     });
     if (!offscreenCtx) return;
-    offscreenCtx.drawImage(bitmap, 0, 0);
-    offscreenCtx.fillStyle = "rgba(0, 0, 0, 1)";
-    offscreenCtx.globalCompositeOperation = "destination-in";
     for (const path of traced) {
       offscreenCtx.fill(new Path2D(path));
     }
-    const trimmed = trim(offscreen);
+    offscreenCtx.fillStyle = "rgba(0, 0, 0, 1)";
+    offscreenCtx.globalCompositeOperation = "source-in";
+    offscreenCtx.drawImage(bitmap, 0, 0);
+    const trimmed = trim(
+      offscreenCtx.getImageData(0, 0, bitmap.width, bitmap.height)
+    );
     if (trimmed == null) {
       setRenderedImage(null);
     } else {
-      trimmed.convertToBlob({ type: "image/png" }).then(setRenderedImage);
+      const [tx, ty, tw, th] = trimmed;
+      const copy = new OffscreenCanvas(tw, th);
+      const copyCtx = copy.getContext("2d");
+      if (copyCtx === null) {
+        throw new Error("Could not get context");
+      }
+      copyCtx.putImageData(offscreenCtx.getImageData(tx, ty, tw, th), 0, 0);
+      copy.convertToBlob({ type: "image/png" }).then(setRenderedImage);
     }
   }, [bitmap, traced]);
 

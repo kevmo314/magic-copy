@@ -119,20 +119,29 @@ function Renderer({
     ctx.save();
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.setTransform(canvasScale, 0, 0, canvasScale, 0, 0);
-    ctx.drawImage(image, 0, 0);
-    if (!traced) {
-      ctx.restore();
-      return;
-    }
     if (mode === "edit") {
+      ctx.drawImage(image, 0, 0);
+      if (!traced) {
+        ctx.restore();
+        return;
+      }
       ctx.fillStyle = "rgba(0, 255, 0, 0.4)";
       ctx.globalCompositeOperation = "multiply";
+      for (const path of traced) {
+        ctx.fill(new Path2D(path));
+      }
     } else {
+      if (!traced) {
+        ctx.drawImage(image, 0, 0);
+        ctx.restore();
+        return;
+      }
+      for (const path of traced) {
+        ctx.fill(new Path2D(path));
+      }
       ctx.fillStyle = "rgba(255, 255, 255, 1)";
-      ctx.globalCompositeOperation = "destination-in";
-    }
-    for (const path of traced) {
-      ctx.fill(new Path2D(path));
+      ctx.globalCompositeOperation = "source-in";
+      ctx.drawImage(image, 0, 0);
     }
     ctx.restore();
   }, [image, traced, mode, canvasScale, svgScale]);
