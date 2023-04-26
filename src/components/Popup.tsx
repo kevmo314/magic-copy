@@ -24,6 +24,17 @@ export default function Popup({
     return () => window.removeEventListener("resize", handleResize);
   }, [frameRef]);
 
+  // listen for escape key to close
+  React.useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [onClose]);
+
   return (
     <div
       ref={frameRef}
