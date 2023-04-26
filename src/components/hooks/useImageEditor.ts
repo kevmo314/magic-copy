@@ -194,6 +194,7 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
     mask,
     traced,
     renderedImage,
+    isLoading: !bitmap || !embeddings,
     onClick(x: number, y: number, type: "left" | "right") {
       setClicks((clicks) => [...clicks, { x, y }]);
     },

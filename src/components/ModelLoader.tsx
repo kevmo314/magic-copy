@@ -10,8 +10,15 @@ export default function ModelLoader({ image }: { image: Blob }) {
 
   const sandboxRef = React.useRef<HTMLIFrameElement>(null);
 
-  const { bitmap, mask, traced, renderedImage, onClick, onUndo, isUndoable } =
-    useImageEditor(image, sandboxRef.current?.contentWindow ?? null);
+  const {
+    bitmap,
+    isLoading,
+    traced,
+    renderedImage,
+    onClick,
+    onUndo,
+    isUndoable,
+  } = useImageEditor(image, sandboxRef.current?.contentWindow ?? null);
 
   if (!bitmap) {
     return <div>Loading...</div>;
@@ -33,6 +40,9 @@ export default function ModelLoader({ image }: { image: Blob }) {
           style={{ display: "none" }}
         ></iframe>
         <LeftToolbar mode={mode} onModeChange={setMode} />
+        {isLoading && (
+          <div className="magic-copy-loading">Loading embeddings...</div>
+        )}
         <RightToolbar
           onUndo={onUndo}
           isUndoDisabled={!isUndoable}

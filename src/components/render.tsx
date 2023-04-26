@@ -55,6 +55,11 @@ export function render(image: Blob) {
 
         .magic-copy-toolbar button:hover {
           background: #eeeeee;
+        }
+        
+        .magic-copy-loading {
+          color: white;
+          font: 14px sans-serif;
         }`}
       </style>
       <ModelLoader image={image} />
