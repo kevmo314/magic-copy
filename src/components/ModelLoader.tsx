@@ -31,7 +31,7 @@ export default function ModelLoader({ image }: { image: Blob }) {
           display: "flex",
           justifyContent: "space-between",
           flexDirection: "row",
-          padding: "5px",
+          padding: "5px 0",
         }}
       >
         <iframe
