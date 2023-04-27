@@ -41,12 +41,12 @@ jobs:
       - name: Upload zip
         uses: actions/upload-artifact@v3
         with:
-          name: magic-copy
+          name: magic-copy-${{ matrix.platform }}
           path: dist
       - name: Upload crx
         uses: actions/upload-artifact@v3
         with:
-          name: magic-copy.crx
+          name: magic-copy-${{ matrix.platform }}.crx
           path: dist.crx
       - name: Upload to release
         uses: softprops/action-gh-release@v1
