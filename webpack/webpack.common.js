@@ -31,7 +31,19 @@ module.exports = {
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: ".", to: "../", context: "public" }],
+      patterns: [
+        {
+          from: ".",
+          to: "../",
+          context: "public",
+          filter: (resourcePath) => {
+            return (
+              !resourcePath.endsWith("public/manifest.chrome.json") &&
+              !resourcePath.endsWith("public/manifest.firefox.json")
+            );
+          },
+        },
+      ],
       options: {},
     }),
   ],
