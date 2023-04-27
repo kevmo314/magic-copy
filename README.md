@@ -2,7 +2,7 @@
 
 Magic Copy is a Chrome extension that uses Meta's [Segment Anything Model](https://segment-anything.com/) to extract a foreground object from an image and copy it to the clipboard.
 
-https://user-images.githubusercontent.com/511342/230546504-1ed11d08-3dda-422c-b304-e77dbb664e80.mp4
+https://user-images.githubusercontent.com/511342/234897336-f2441e00-06e0-4ca8-9b97-601210879cdb.mp4
 
 ## Installation
 
