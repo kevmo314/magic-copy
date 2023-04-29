@@ -2,7 +2,7 @@
   "name": "Magic Copy",
   "description": "A Chrome extension to add a 'Magic Copy' option to the context menu, which copies selective parts of the image.",
   "version": "0.0.1",
-  "manifest_version": 3,
+  "manifest_version": 2,
   "icons": {
     "16": "icon16.png",
     "32": "icon32.png",
@@ -12,8 +12,14 @@
   "background": {
     "scripts": ["js/background.js"]
   },
-  "permissions": ["contextMenus", "storage", "file:///*"],
-  "host_permissions": ["<all_urls>"],
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "clipboardWrite",
+    "http://*/*",
+    "https://*/*",
+    "file://*/*"
+  ],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -22,22 +28,13 @@
     }
   ],
   "web_accessible_resources": [
-    {
-      "resources": [
-        "sandbox.html",
-        "interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx",
-        "ort-wasm-simd-threaded.wasm",
-        "ort-wasm-simd.wasm",
-        "ort-wasm-threaded.wasm",
-        "ort-wasm.wasm"
-      ],
-      "matches": ["<all_urls>"],
-      "use_dynamic_url": true
-    }
+    "sandbox.html",
+    "interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx",
+    "ort-wasm-simd-threaded.wasm",
+    "ort-wasm-simd.wasm",
+    "ort-wasm-threaded.wasm",
+    "ort-wasm.wasm"
   ],
-  "sandbox": {
-    "pages": ["sandbox.html"]
-  },
   "options_ui": {
     "page": "options.html",
     "open_in_tab": false

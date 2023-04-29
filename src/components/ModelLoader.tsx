@@ -46,8 +46,20 @@ export default function ModelLoader({ image }: { image: Blob }) {
         <RightToolbar
           onUndo={onUndo}
           isUndoDisabled={!isUndoable}
-          onCopy={() => {
+          onCopy={async () => {
             if (!renderedImage) return;
+            if (typeof ClipboardItem === "undefined") {
+              // Firefox :\ render the image and copy it to the clipboard
+              const data = {
+                action: "firefox-copy",
+                image: {
+                  data: await renderedImage.arrayBuffer(),
+                  type: renderedImage.type,
+                },
+              };
+              chrome.runtime.sendMessage(data);
+              return;
+            }
             navigator.clipboard.write([
               new ClipboardItem({
                 // The key is determined dynamically based on the blob's type.
