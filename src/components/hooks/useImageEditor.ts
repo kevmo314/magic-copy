@@ -43,7 +43,7 @@ function trim(pixels: ImageData) {
 }
 
 export default function useImageEditor(image: Blob, sandbox: Window | null) {
-  const [bitmap, setBitmap] = React.useState<ImageBitmap | null>(null);
+  const [bitmap, setBitmap] = React.useState<HTMLImageElement | null>(null);
   const [embeddings, setEmbeddings] = React.useState<Tensor | null>(null);
   // the image mask, not necessarily same dimensions as image
   const [clicks, setClicks] = React.useState<{ x: number; y: number }[]>([]);
@@ -53,7 +53,11 @@ export default function useImageEditor(image: Blob, sandbox: Window | null) {
   const predMasksRef = React.useRef<Tensor[]>([]);
 
   React.useEffect(() => {
-    createImageBitmap(image).then(setBitmap);
+    const img = new Image();
+    img.src = URL.createObjectURL(image);
+    img.onload = () => {
+      setBitmap(img);
+    };
   }, [image]);
 
   React.useEffect(() => {

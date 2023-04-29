@@ -125,7 +125,7 @@ function Renderer({
   mode,
 }: {
   traced: string[] | null;
-  image: ImageBitmap;
+  image: HTMLImageElement;
   canvasScale: number;
   svgScale: number;
   onMaskClick: (x: number, y: number) => void;
