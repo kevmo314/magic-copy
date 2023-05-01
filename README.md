@@ -19,6 +19,10 @@ Alternatively, the extension can be installed manually:
 3. In Chrome, go to `chrome://extensions/`, enable "Developer mode", and click "Load unpacked".
 4. Select the folder where the extension was extracted.
 
+### Figma
+
+Magic Copy is also available as a [Figma plugin](https://www.figma.com/community/plugin/1234171506421686729).
+
 ## Implementation
 
 This extension uses the same procedure as the [Segment Anything Model demo](https://segment-anything.com/demo) to extract a foreground object from an image. The only difference is that the extracted object is copied to the clipboard instead of being displayed on the page.
