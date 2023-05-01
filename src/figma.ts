@@ -13,7 +13,10 @@ async function main() {
         return;
       }
       const bytes = await image.getBytesAsync();
-      figma.showUI(__html__);
+      figma.showUI(__html__, {
+        width: 800,
+        height: 652,
+      });
       figma.ui.postMessage({
         action: "open",
         image: {

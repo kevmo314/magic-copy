@@ -75,75 +75,82 @@ export default function useFigmaEditor(image: Blob) {
     }
     ctx.scale(scale, scale);
     ctx.drawImage(bitmap, 0, 0);
-    canvas
-      .convertToBlob()
-      .then(async (resized) => {
-        const buffer = await resized.arrayBuffer();
-        const response = await fetch(DEFAULT_ENDPOINT, {
-          method: "POST",
-          body: buffer,
-        });
-        const json = await response.json();
-        const uint8arr = Uint8Array.from(atob(json[0]), (c) => c.charCodeAt(0));
-        const float32Arr = new Float32Array(uint8arr.buffer);
-        return new Tensor("float32", float32Arr, [1, 256, 64, 64]);
-      })
-      .then(async (embeddings) => {
-        const uploadScale =
-          UPLOAD_IMAGE_SIZE / Math.max(bitmap.height, bitmap.width);
-        const w = bitmap.width;
-        const h = bitmap.height;
-        const IMAGE_SIZE = 500;
-        const d = Math.min(w, h);
-        let scale = IMAGE_SIZE / d;
-        if (d * scale > 1333) {
-          scale = 1333 / d;
-        }
-        const modelScale = {
-          onnxScale: scale / uploadScale,
-          maskWidth: w * uploadScale,
-          maskHeight: h * uploadScale,
-          scale: scale,
-          uploadScale: uploadScale,
-          width: w,
-          height: h,
-        };
-        if (clicks.length === 0) {
-          setMask(null);
-          setRenderedImage(null);
-          predMasksRef.current.splice(0, predMasksRef.current.length);
-          return;
-        }
-        const predMasks = predMasksRef.current;
-        const feeds = modelData({
-          clicks: clicks.map((click) => ({
-            x: click.x,
-            y: click.y,
-            width: null,
-            height: null,
-            clickType: 1,
-          })),
-          tensor: embeddings,
-          modelScale,
-          last_pred_mask:
-            predMasks.length > 0 ? predMasks[predMasks.length - 1] : null,
-        });
-        if (!feeds) {
-          return;
-        }
-        env.wasm.wasmPaths = {
-          "ort-wasm-simd-threaded.wasm": "/ort-wasm-simd-threaded.wasm",
-          "ort-wasm-simd.wasm": "/ort-wasm-simd.wasm",
-          "ort-wasm-threaded.wasm": "/ort-wasm-threaded.wasm",
-          "ort-wasm.wasm": "/ort-wasm.wasm",
-        };
-        const model = await InferenceSession.create(
-          "/interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx"
-        );
-        const results = await model.run(feeds);
+    canvas.convertToBlob().then(async (resized) => {
+      const buffer = await resized.arrayBuffer();
+      const response = await fetch(DEFAULT_ENDPOINT, {
+        method: "POST",
+        body: buffer,
+      });
+      const json = await response.json();
+      const uint8arr = Uint8Array.from(atob(json[0]), (c) => c.charCodeAt(0));
+      const float32Arr = new Float32Array(uint8arr.buffer);
+      setEmbeddings(new Tensor("float32", float32Arr, [1, 256, 64, 64]));
+    });
+  }, [bitmap]);
+
+  React.useEffect(() => {
+    if (!bitmap || !embeddings) {
+      return;
+    }
+    const uploadScale =
+      UPLOAD_IMAGE_SIZE / Math.max(bitmap.height, bitmap.width);
+    const w = bitmap.width;
+    const h = bitmap.height;
+    const IMAGE_SIZE = 500;
+    const d = Math.min(w, h);
+    let scale = IMAGE_SIZE / d;
+    if (d * scale > 1333) {
+      scale = 1333 / d;
+    }
+    const modelScale = {
+      onnxScale: scale / uploadScale,
+      maskWidth: w * uploadScale,
+      maskHeight: h * uploadScale,
+      scale: scale,
+      uploadScale: uploadScale,
+      width: w,
+      height: h,
+    };
+    if (clicks.length === 0) {
+      setMask(null);
+      setRenderedImage(null);
+      predMasksRef.current.splice(0, predMasksRef.current.length);
+      return;
+    }
+    const predMasks = predMasksRef.current;
+    const feeds = modelData({
+      clicks: clicks.map((click) => ({
+        x: click.x,
+        y: click.y,
+        width: null,
+        height: null,
+        clickType: 1,
+      })),
+      tensor: embeddings,
+      modelScale,
+      last_pred_mask:
+        predMasks.length > 0 ? predMasks[predMasks.length - 1] : null,
+    });
+    if (!feeds) {
+      return;
+    }
+    env.wasm.wasmPaths = {
+      "ort-wasm-simd-threaded.wasm":
+        "https://kevmo314.github.io/magic-copy/ort-wasm-simd-threaded.wasm",
+      "ort-wasm-simd.wasm":
+        "https://kevmo314.github.io/magic-copy/ort-wasm-simd.wasm",
+      "ort-wasm-threaded.wasm":
+        "https://kevmo314.github.io/magic-copy/ort-wasm-threaded.wasm",
+      "ort-wasm.wasm": "https://kevmo314.github.io/magic-copy/ort-wasm.wasm",
+    };
+    InferenceSession.create(
+      "https://kevmo314.github.io/magic-copy/interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx"
+    )
+      .then((model) => model.run(feeds))
+      .then((results) => {
         console.log(results);
       });
-  }, [bitmap]);
+  }, [bitmap, embeddings, clicks]);
 
   const traced = React.useMemo(() => {
     if (!bitmap || !mask) {

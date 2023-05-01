@@ -16,6 +16,10 @@ window.addEventListener("message", (event) => {
     <>
       <style type="text/css">
         {`
+        body {
+          margin: 0;
+        }
+        
         .magic-copy-toolbar {
           background: white;
           border-radius: 6px;

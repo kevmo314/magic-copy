@@ -22,6 +22,8 @@ export default function Figma({ image }: { image: Blob }) {
     return <div>Loading...</div>;
   }
 
+  const scaleToFit = Math.min(800 / bitmap.width, 600 / bitmap.height);
+
   return (
     <>
       <div
@@ -71,40 +73,24 @@ export default function Figma({ image }: { image: Blob }) {
           isDownloadDisabled={!renderedImage}
         />
       </div>
-      <FrameSizeContext.Consumer>
-        {(frame) => {
-          const scaleToFit = Math.min(
-            frame.width / bitmap.width,
-            frame.height / bitmap.height
-          );
-          return (
-            <Renderer
-              traced={traced}
-              image={bitmap}
-              canvasScale={scaleToFit}
-              svgScale={
-                Math.max(bitmap.height, bitmap.width) / UPLOAD_IMAGE_SIZE
-              }
-              onMaskClick={(x, y) => {
-                const w = bitmap.width;
-                const h = bitmap.height;
-                const IMAGE_SIZE = 500;
-                const d = Math.min(w, h);
-                let scale = IMAGE_SIZE / d;
-                if (d * scale > 1333) {
-                  scale = 1333 / d;
-                }
-                onClick(
-                  (x * scale) / scaleToFit,
-                  (y * scale) / scaleToFit,
-                  "left"
-                );
-              }}
-              mode={mode}
-            />
-          );
+      <Renderer
+        traced={traced}
+        image={bitmap}
+        canvasScale={scaleToFit}
+        svgScale={Math.max(bitmap.height, bitmap.width) / UPLOAD_IMAGE_SIZE}
+        onMaskClick={(x, y) => {
+          const w = bitmap.width;
+          const h = bitmap.height;
+          const IMAGE_SIZE = 500;
+          const d = Math.min(w, h);
+          let scale = IMAGE_SIZE / d;
+          if (d * scale > 1333) {
+            scale = 1333 / d;
+          }
+          onClick((x * scale) / scaleToFit, (y * scale) / scaleToFit, "left");
         }}
-      </FrameSizeContext.Consumer>
+        mode={mode}
+      />
     </>
   );
 }
