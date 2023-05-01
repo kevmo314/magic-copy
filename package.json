@@ -26,7 +26,7 @@
     "@types/firefox-webext-browser": "^111.0.1",
     "@types/offscreencanvas": "^2019.7.0",
     "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.0.11",
+    "@types/react-dom": "^18.2.1",
     "copy-webpack-plugin": "^11.0.0",
     "html-webpack-inline-source-plugin": "^0.0.10",
     "html-webpack-plugin": "^5.5.1",
