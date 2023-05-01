@@ -51,6 +51,7 @@ export default function useFigmaEditor(image: Blob) {
   // the masked image
   const [mask, setMask] = React.useState<Tensor | null>(null);
   const [renderedImage, setRenderedImage] = React.useState<Blob | null>(null);
+  const [trimmedImage, setTrimmedImage] = React.useState<Blob | null>(null);
   const predMasksRef = React.useRef<Tensor[]>([]);
 
   React.useEffect(() => {
@@ -113,7 +114,7 @@ export default function useFigmaEditor(image: Blob) {
     };
     if (clicks.length === 0) {
       setMask(null);
-      setRenderedImage(null);
+      setTrimmedImage(null);
       predMasksRef.current.splice(0, predMasksRef.current.length);
       return;
     }
@@ -147,8 +148,9 @@ export default function useFigmaEditor(image: Blob) {
       "https://kevmo314.github.io/magic-copy/interactive_module_quantized_592547_2023_03_19_sam6_long_uncertain.onnx"
     )
       .then((model) => model.run(feeds))
-      .then((results) => {
-        console.log(results);
+      .then(({ output, mask }) => {
+        setMask(output);
+        predMasksRef.current.push(mask);
       });
   }, [bitmap, embeddings, clicks]);
 
@@ -182,8 +184,9 @@ export default function useFigmaEditor(image: Blob) {
     const trimmed = trim(
       offscreenCtx.getImageData(0, 0, bitmap.width, bitmap.height)
     );
+    offscreen.convertToBlob({ type: "image/png" }).then(setRenderedImage);
     if (trimmed == null) {
-      setRenderedImage(null);
+      setTrimmedImage(null);
     } else {
       const [tx, ty, tw, th] = trimmed;
       const copy = new OffscreenCanvas(tw, th);
@@ -192,7 +195,7 @@ export default function useFigmaEditor(image: Blob) {
         throw new Error("Could not get context");
       }
       copyCtx.putImageData(offscreenCtx.getImageData(tx, ty, tw, th), 0, 0);
-      copy.convertToBlob({ type: "image/png" }).then(setRenderedImage);
+      copy.convertToBlob({ type: "image/png" }).then(setTrimmedImage);
     }
   }, [bitmap, traced]);
 
@@ -201,6 +204,7 @@ export default function useFigmaEditor(image: Blob) {
     mask,
     traced,
     renderedImage,
+    trimmedImage,
     isLoading: !bitmap || !embeddings,
     onClick(x: number, y: number, type: "left" | "right") {
       setClicks((clicks) => [...clicks, { x, y }]);

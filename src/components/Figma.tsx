@@ -1,7 +1,6 @@
 import React from "react";
-import { FrameSizeContext } from "./FrameSizeContext";
 import useFigmaEditor from "./hooks/useFigmaEditor";
-import { LeftToolbar, RightToolbar } from "./Toolbars";
+import { LeftToolbar, RightFigmaToolbar } from "./Toolbars";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
@@ -13,10 +12,26 @@ export default function Figma({ image }: { image: Blob }) {
     isLoading,
     traced,
     renderedImage,
+    trimmedImage,
     onClick,
     onUndo,
     isUndoable,
   } = useFigmaEditor(image);
+
+  React.useEffect(() => {
+    if (!bitmap) return;
+    const scaleToFit = Math.min(800 / bitmap.width, 600 / bitmap.height);
+    window.parent.postMessage(
+      {
+        pluginMessage: {
+          action: "resize",
+          width: Math.ceil(bitmap.width * scaleToFit),
+          height: Math.ceil(bitmap.height * scaleToFit) + 52,
+        },
+      },
+      "*"
+    );
+  }, [bitmap]);
 
   if (!bitmap) {
     return <div>Loading...</div>;
@@ -38,39 +53,35 @@ export default function Figma({ image }: { image: Blob }) {
         {isLoading && (
           <div className="magic-copy-loading">Loading embeddings...</div>
         )}
-        <RightToolbar
+        <RightFigmaToolbar
           onUndo={onUndo}
           isUndoDisabled={!isUndoable}
           onCopy={async () => {
-            if (!renderedImage) return;
-            if (typeof ClipboardItem === "undefined") {
-              // Firefox :\ render the image and copy it to the clipboard
-              const data = {
-                action: "firefox-copy",
-                image: {
-                  data: await renderedImage.arrayBuffer(),
-                  type: renderedImage.type,
-                },
-              };
-              chrome.runtime.sendMessage(data);
-              return;
-            }
+            if (!trimmedImage) return;
             navigator.clipboard.write([
               new ClipboardItem({
                 // The key is determined dynamically based on the blob's type.
-                [renderedImage.type]: renderedImage,
+                [trimmedImage.type]: trimmedImage,
               } as any),
             ]);
           }}
-          isCopyDisabled={!renderedImage}
-          onDownload={() => {
+          isCopyDisabled={!trimmedImage}
+          onApply={async () => {
             if (!renderedImage) return;
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(renderedImage);
-            a.download = "image.png";
-            a.click();
+            window.parent.postMessage(
+              {
+                pluginMessage: {
+                  action: "apply",
+                  image: {
+                    data: await renderedImage.arrayBuffer(),
+                    type: renderedImage.type,
+                  },
+                },
+              },
+              "*"
+            );
           }}
-          isDownloadDisabled={!renderedImage}
+          isApplyDisabled={!renderedImage}
         />
       </div>
       <Renderer

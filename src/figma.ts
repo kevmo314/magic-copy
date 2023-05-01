@@ -4,8 +4,9 @@ async function main() {
     figma.closePlugin("Please select a frame or component.");
     return;
   }
-  const fills = (selection[0] as GeometryMixin).fills;
-  for (const paint of fills as Paint[]) {
+  const fills = (selection[0] as GeometryMixin).fills as Paint[];
+  for (let i = 0; i < fills.length; i++) {
+    const paint = fills[i];
     if (paint.type === "IMAGE" && paint.imageHash) {
       const image = figma.getImageByHash(paint.imageHash);
       if (!image) {
@@ -23,6 +24,21 @@ async function main() {
           data: bytes,
         },
       });
+      figma.ui.onmessage = (message) => {
+        if (message.action === "apply") {
+          const newPaint = JSON.parse(JSON.stringify(paint));
+          newPaint.imageHash = figma.createImage(
+            new Uint8Array(message.image.data)
+          ).hash;
+          const newFills = JSON.parse(JSON.stringify(fills));
+          newFills[i] = newPaint;
+          (selection[0] as GeometryMixin).fills = newFills;
+          figma.closePlugin("Image updated.");
+        }
+        if (message.action === "resize") {
+          figma.ui.resize(message.width, message.height);
+        }
+      };
       return;
     }
   }
