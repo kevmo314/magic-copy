@@ -4,11 +4,10 @@ const CopyPlugin = require("copy-webpack-plugin");
 const srcDir = path.join(__dirname, "..", "src");
 
 module.exports = {
+  mode: "production",
   entry: {
-    background: path.join(srcDir, "background.ts"),
-    content_script: path.join(srcDir, "content_script.ts"),
-    sandbox: path.join(srcDir, "sandbox.ts"),
-    options: path.join(srcDir, "options.tsx"),
+    figma: path.join(srcDir, "figma.ts"),
+    figmaUi: path.join(srcDir, "figma_ui.ts"),
   },
   output: {
     path: path.join(__dirname, "../dist/js"),
@@ -39,6 +38,15 @@ module.exports = {
           filter: (resourcePath) => {
             return !resourcePath.endsWith(".json");
           },
+        },
+      ],
+      options: {},
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: "./public/manifest.figma.json",
+          to: "../manifest.json",
         },
       ],
       options: {},

@@ -6,7 +6,9 @@
     "watch:chrome": "webpack --config webpack/webpack.chrome.dev.js --watch",
     "build:chrome": "webpack --config webpack/webpack.chrome.prod.js",
     "watch:firefox": "webpack --config webpack/webpack.firefox.dev.js --watch",
-    "build:firefox": "webpack --config webpack/webpack.firefox.prod.js"
+    "build:firefox": "webpack --config webpack/webpack.firefox.prod.js",
+    "watch:figma": "webpack --config webpack/webpack.figma.dev.js --watch",
+    "build:figma": "webpack --config webpack/webpack.figma.prod.js"
   },
   "author": "Kevin Wang <kevmo314@gmail.com>",
   "repository": {
@@ -19,12 +21,16 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@figma/plugin-typings": "^1.63.0",
     "@types/chrome": "0.0.233",
     "@types/firefox-webext-browser": "^111.0.1",
     "@types/offscreencanvas": "^2019.7.0",
     "@types/react": "^18.0.38",
     "@types/react-dom": "^18.0.11",
     "copy-webpack-plugin": "^11.0.0",
+    "html-webpack-inline-source-plugin": "^0.0.10",
+    "html-webpack-plugin": "^5.5.1",
+    "react-dev-utils": "^12.0.1",
     "ts-loader": "^9.4.2",
     "typescript": "^5.0.4",
     "webpack": "^5.80.0",

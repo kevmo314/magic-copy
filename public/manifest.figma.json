@@ -1,0 +1,10 @@
+{
+  "name": "Magic Copy",
+  "id": "1234171506421686729",
+  "api": "1.0.0",
+  "main": "figma.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "editorType": ["figma", "figjam"],
+  "ui": "figma.html"
+}
