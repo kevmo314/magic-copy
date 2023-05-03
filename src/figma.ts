@@ -14,9 +14,11 @@ async function main() {
         return;
       }
       const bytes = await image.getBytesAsync();
+      const size = await image.getSizeAsync();
+      const scaleToFit = Math.min(800 / size.width, 600 / size.height);
       figma.showUI(__html__, {
-        width: 800,
-        height: 652,
+        width: Math.ceil(size.width * scaleToFit),
+        height: Math.ceil(size.height * scaleToFit) + 52,
       });
       figma.ui.postMessage({
         action: "open",
