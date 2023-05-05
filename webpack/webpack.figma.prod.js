@@ -2,15 +2,17 @@ const webpack = require("webpack");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
 const srcDir = path.join(__dirname, "..", "src");
+const InlineChunkHtmlPlugin = require("react-dev-utils/InlineChunkHtmlPlugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {
   mode: "production",
   entry: {
     figma: path.join(srcDir, "figma.ts"),
-    figmaUi: path.join(srcDir, "figma_ui.ts"),
+    figmaUi: path.join(srcDir, "figma_ui.tsx"),
   },
   output: {
-    path: path.join(__dirname, "../dist/js"),
+    path: path.join(__dirname, "../dist/"),
     filename: "[name].js",
   },
   optimization: {
@@ -32,24 +34,19 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          from: ".",
-          to: "../",
-          context: "public",
-          filter: (resourcePath) => {
-            return !resourcePath.endsWith(".json");
-          },
-        },
-      ],
-      options: {},
-    }),
-    new CopyPlugin({
-      patterns: [
-        {
           from: "./public/manifest.figma.json",
-          to: "../manifest.json",
+          to: "./manifest.json",
         },
       ],
       options: {},
     }),
+    new HtmlWebpackPlugin({
+      inject: "body",
+      template: "./src/figma.html",
+      filename: "figma.html",
+      chunks: ["figmaUi"],
+      cache: false,
+    }),
+    new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/figmaUi/]),
   ],
 };
