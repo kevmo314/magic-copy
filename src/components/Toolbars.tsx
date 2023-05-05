@@ -179,15 +179,11 @@ export function RightToolbar({
 export function RightFigmaToolbar({
   onUndo,
   isUndoDisabled,
-  onCopy,
-  isCopyDisabled,
   onApply,
   isApplyDisabled,
 }: {
   onUndo: () => void;
   isUndoDisabled: boolean;
-  onCopy: () => void;
-  isCopyDisabled: boolean;
   onApply: () => void;
   isApplyDisabled: boolean;
 }) {
@@ -220,35 +216,6 @@ export function RightFigmaToolbar({
           </svg>
         )}
         Undo
-      </button>
-      <button onClick={onCopy} disabled={isCopyDisabled}>
-        {isCopyDisabled ? (
-          <svg width="24" height="24" viewBox="0 0 27 27">
-            <path
-              d="M18.9 14.7156V20.3856C18.9 25.1106 17.01 27.0006 12.285 27.0006H6.615C1.89 27.0006 0 25.1106 0 20.3856V14.7156C0 9.99059 1.89 8.10059 6.615 8.10059H12.285C17.01 8.10059 18.9 9.99059 18.9 14.7156Z"
-              fill="#D3D3D3"
-            />
-            <path
-              opacity="0.4"
-              d="M20.3847 0H14.7147C10.0572 0 8.1672 1.8495 8.1132 6.4125H12.2847C17.9547 6.4125 20.5872 9.045 20.5872 14.715V18.8865C25.1502 18.8325 26.9997 16.9425 26.9997 12.285V6.615C26.9997 1.89 25.1097 0 20.3847 0Z"
-              fill="#292D32"
-              fillOpacity="0.82"
-            />
-          </svg>
-        ) : (
-          <svg width="24" height="24" viewBox="0 0 27 27">
-            <path
-              d="M18.9 14.7156V20.3856C18.9 25.1106 17.01 27.0006 12.285 27.0006H6.615C1.89 27.0006 0 25.1106 0 20.3856V14.7156C0 9.99059 1.89 8.10059 6.615 8.10059H12.285C17.01 8.10059 18.9 9.99059 18.9 14.7156Z"
-              fill="#9F9F9F"
-            />
-            <path
-              opacity="0.4"
-              d="M20.3847 0H14.7147C10.0572 0 8.1672 1.8495 8.1132 6.4125H12.2847C17.9547 6.4125 20.5872 9.045 20.5872 14.715V18.8865C25.1502 18.8325 26.9997 16.9425 26.9997 12.285V6.615C26.9997 1.89 25.1097 0 20.3847 0Z"
-              fill="black"
-            />
-          </svg>
-        )}
-        Copy
       </button>
       <button onClick={onApply} disabled={isApplyDisabled}>
         {isApplyDisabled ? (

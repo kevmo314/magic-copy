@@ -6,43 +6,6 @@ import { modelData } from "../../lib/models";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
-function trim(pixels: ImageData) {
-  const bound = {
-    top: pixels.height,
-    left: pixels.width,
-    right: 0,
-    bottom: 0,
-  };
-
-  for (let x = 0; x < pixels.width; x++) {
-    for (let y = 0; y < pixels.height; y++) {
-      const i = (y * pixels.width + x) * 4;
-      if (pixels.data[i + 3] === 0) {
-        continue;
-      }
-      if (y < bound.top) {
-        bound.top = y;
-      }
-      if (x < bound.left) {
-        bound.left = x;
-      }
-      if (x > bound.right) {
-        bound.right = x;
-      }
-      if (y > bound.bottom) {
-        bound.bottom = y;
-      }
-    }
-  }
-
-  const trimHeight = bound.bottom - bound.top + 1,
-    trimWidth = bound.right - bound.left + 1;
-  if (trimWidth <= 0 || trimHeight <= 0) {
-    return null;
-  }
-  return [bound.left, bound.top, trimWidth, trimHeight];
-}
-
 export default function useFigmaEditor(image: Blob) {
   const [bitmap, setBitmap] = React.useState<HTMLImageElement | null>(null);
   const [embeddings, setEmbeddings] = React.useState<Tensor | null>(null);
@@ -51,7 +14,6 @@ export default function useFigmaEditor(image: Blob) {
   // the masked image
   const [mask, setMask] = React.useState<Tensor | null>(null);
   const [renderedImage, setRenderedImage] = React.useState<Blob | null>(null);
-  const [trimmedImage, setTrimmedImage] = React.useState<Blob | null>(null);
   const predMasksRef = React.useRef<Tensor[]>([]);
 
   React.useEffect(() => {
@@ -114,7 +76,7 @@ export default function useFigmaEditor(image: Blob) {
     };
     if (clicks.length === 0) {
       setMask(null);
-      setTrimmedImage(null);
+      setRenderedImage(null);
       predMasksRef.current.splice(0, predMasksRef.current.length);
       return;
     }
@@ -181,22 +143,7 @@ export default function useFigmaEditor(image: Blob) {
     offscreenCtx.fillStyle = "rgba(0, 0, 0, 1)";
     offscreenCtx.globalCompositeOperation = "source-in";
     offscreenCtx.drawImage(bitmap, 0, 0);
-    const trimmed = trim(
-      offscreenCtx.getImageData(0, 0, bitmap.width, bitmap.height)
-    );
     offscreen.convertToBlob({ type: "image/png" }).then(setRenderedImage);
-    if (trimmed == null) {
-      setTrimmedImage(null);
-    } else {
-      const [tx, ty, tw, th] = trimmed;
-      const copy = new OffscreenCanvas(tw, th);
-      const copyCtx = copy.getContext("2d");
-      if (copyCtx === null) {
-        throw new Error("Could not get context");
-      }
-      copyCtx.putImageData(offscreenCtx.getImageData(tx, ty, tw, th), 0, 0);
-      copy.convertToBlob({ type: "image/png" }).then(setTrimmedImage);
-    }
   }, [bitmap, traced]);
 
   return {
@@ -204,7 +151,6 @@ export default function useFigmaEditor(image: Blob) {
     mask,
     traced,
     renderedImage,
-    trimmedImage,
     isLoading: !bitmap || !embeddings,
     onClick(x: number, y: number, type: "left" | "right") {
       setClicks((clicks) => [...clicks, { x, y }]);

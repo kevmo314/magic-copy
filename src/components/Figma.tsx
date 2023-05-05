@@ -12,7 +12,6 @@ export default function Figma({ image }: { image: Blob }) {
     isLoading,
     traced,
     renderedImage,
-    trimmedImage,
     onClick,
     onUndo,
     isUndoable,
@@ -56,16 +55,6 @@ export default function Figma({ image }: { image: Blob }) {
         <RightFigmaToolbar
           onUndo={onUndo}
           isUndoDisabled={!isUndoable}
-          onCopy={async () => {
-            if (!trimmedImage) return;
-            navigator.clipboard.write([
-              new ClipboardItem({
-                // The key is determined dynamically based on the blob's type.
-                [trimmedImage.type]: trimmedImage,
-              } as any),
-            ]);
-          }}
-          isCopyDisabled={!trimmedImage}
           onApply={async () => {
             if (!renderedImage) return;
             window.parent.postMessage(
