@@ -52,11 +52,29 @@ window.addEventListener("message", (event) => {
         }
         
         .magic-copy-loading {
-          color: white;
+          color: black;
           font: 14px sans-serif;
-        }`}
+        }
+        
+        .magic-copy-ad {
+          color: black;
+          padding: 16px;
+          background-color: #eeeeee;
+          font: 14px sans-serif;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 52px;
+          box-sizing: border-box;
+        }
+
+        .magic-copy-ad a {
+          color: black;
+          font-weight: bold
+        }
+        `}
       </style>
-      <Figma image={image} />
+      <Figma image={image} initialShowAd={message.showAd} />
     </>
   );
 });

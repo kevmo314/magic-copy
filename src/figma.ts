@@ -16,6 +16,7 @@ async function main() {
       const bytes = await image.getBytesAsync();
       const size = await image.getSizeAsync();
       const scaleToFit = Math.min(800 / size.width, 600 / size.height);
+      const showAd = await figma.clientStorage.getAsync("show-ad");
       figma.showUI(__html__, {
         width: Math.ceil(size.width * scaleToFit),
         height: Math.ceil(size.height * scaleToFit) + 52,
@@ -25,6 +26,7 @@ async function main() {
         image: {
           data: bytes,
         },
+        showAd: showAd !== false,
       });
       figma.ui.onmessage = (message) => {
         if (message.action === "apply") {
@@ -39,6 +41,9 @@ async function main() {
         }
         if (message.action === "resize") {
           figma.ui.resize(message.width, message.height);
+        }
+        if (message.action === "hide-ad") {
+          figma.clientStorage.setAsync("show-ad", false);
         }
       };
       return;

@@ -4,8 +4,15 @@ import { LeftToolbar, RightFigmaToolbar } from "./Toolbars";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
-export default function Figma({ image }: { image: Blob }) {
+export default function Figma({
+  image,
+  initialShowAd,
+}: {
+  image: Blob;
+  initialShowAd: boolean;
+}) {
   const [mode, setMode] = React.useState<"edit" | "preview">("edit");
+  const [showAd, setShowAd] = React.useState(initialShowAd);
 
   const {
     bitmap,
@@ -25,12 +32,13 @@ export default function Figma({ image }: { image: Blob }) {
         pluginMessage: {
           action: "resize",
           width: Math.ceil(bitmap.width * scaleToFit),
-          height: Math.ceil(bitmap.height * scaleToFit) + 52,
+          height:
+            Math.ceil(bitmap.height * scaleToFit) + 52 + (showAd ? 52 : 0),
         },
       },
       "*"
     );
-  }, [bitmap]);
+  }, [bitmap, showAd]);
 
   if (!bitmap) {
     return <div>Loading...</div>;
@@ -91,6 +99,31 @@ export default function Figma({ image }: { image: Blob }) {
         }}
         mode={mode}
       />
+      {showAd && (
+        <div className="magic-copy-ad">
+          <div>
+            This is free, no sweat. What's a new product you'd pay us to make?{" "}
+            <a href="https://forms.gle/Y7EiPpELcLtjmJrw9">
+              Tell us. We're working on the next thing.
+            </a>
+          </div>
+          <div>
+            <button
+              onClick={() => {
+                setShowAd(false);
+                window.parent.postMessage(
+                  {
+                    pluginMessage: { action: "hide-ad" },
+                  },
+                  "*"
+                );
+              }}
+            >
+              x
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
