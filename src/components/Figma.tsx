@@ -102,10 +102,8 @@ export default function Figma({
       {showAd && (
         <div className="magic-copy-ad">
           <div>
-            This is free, no sweat. What's a new product you'd pay us to make?{" "}
-            <a href="https://forms.gle/Y7EiPpELcLtjmJrw9">
-              Tell us. We're working on the next thing.
-            </a>
+            <a href="https://forms.gle/Y7EiPpELcLtjmJrw9">Give us feedback.</a>
+            We're working onthe next thing.
           </div>
           <div>
             <button
