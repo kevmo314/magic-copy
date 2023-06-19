@@ -24,7 +24,7 @@ nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
 Pillow==9.5.0
-requests==2.28.2
+requests==2.31.0
 segment-anything==1.0
 sympy==1.11.1
 torch==2.0.0
