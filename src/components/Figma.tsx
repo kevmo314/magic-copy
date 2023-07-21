@@ -1,16 +1,19 @@
 import React from "react";
-import useFigmaEditor from "./hooks/useFigmaEditor";
+import { pairwiseImageCrop } from "../lib/crop";
 import { LeftToolbar, RightFigmaToolbar } from "./Toolbars";
+import useFigmaEditor from "./hooks/useFigmaEditor";
+import { toDataUrl } from "../lib/debug";
 
 const UPLOAD_IMAGE_SIZE = 1024;
 
 export default function Figma({
-  image,
+  image: initialImage,
   initialShowAd,
 }: {
   image: Blob;
   initialShowAd: boolean;
 }) {
+  const [image, setImage] = React.useState(initialImage);
   const [mode, setMode] = React.useState<"edit" | "preview">("edit");
   const [showAd, setShowAd] = React.useState(initialShowAd);
 
@@ -18,8 +21,11 @@ export default function Figma({
     bitmap,
     isLoading,
     traced,
+    maskImage,
+    originalImage,
     renderedImage,
     onClick,
+    onReset,
     onUndo,
     isUndoable,
   } = useFigmaEditor(image);
@@ -64,21 +70,55 @@ export default function Figma({
           onUndo={onUndo}
           isUndoDisabled={!isUndoable}
           onApply={async () => {
-            if (!renderedImage) return;
+            const appliedImage = renderedImage ?? image;
             window.parent.postMessage(
               {
                 pluginMessage: {
                   action: "apply",
                   image: {
-                    data: await renderedImage.arrayBuffer(),
-                    type: renderedImage.type,
+                    data: await appliedImage.arrayBuffer(),
+                    type: appliedImage.type,
                   },
                 },
               },
               "*"
             );
           }}
-          isApplyDisabled={!renderedImage}
+          isApplyDisabled={false}
+          onErase={async () => {
+            if (!maskImage || !originalImage) return;
+            const cropped = await pairwiseImageCrop(originalImage, maskImage,
+              {
+                width: bitmap.width, height: bitmap.height
+              }, {
+              width: 512, height: 512
+            });
+            if (!cropped) {
+              console.log('could not crop, no mask');
+              return;
+            }
+            // make a post request to the server
+            const formData = new FormData();
+            formData.append("image", cropped.original);
+            formData.append("mask", cropped.mask);
+            const response = await fetch("https://magic-cut.kevmo314.com/", {
+              method: "POST",
+              body: formData,
+            });
+            const blob = await response.blob();
+            // patch the original image
+            const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
+            ctx.drawImage(await createImageBitmap(image), 0, 0);
+            ctx.drawImage(await createImageBitmap(blob), cropped.startX, cropped.startY);
+            // render the new image
+            const patched = await canvas.convertToBlob();
+            if (!patched) return;
+            setImage(patched);
+            onReset();
+          }}
+          isEraseDisabled={!maskImage || !originalImage}
         />
       </div>
       <Renderer

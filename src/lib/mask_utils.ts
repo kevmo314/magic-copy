@@ -205,8 +205,6 @@ export const convertPathsToSvg = (paths: Path[], scale: number) => {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
 
-  console.log("rendering");
-
   for (const path of paths) {
     // Count how many other paths a point contained inside this path is contained within
     //  if odd number: should be clockwise, even number: should be counter-clockwise
@@ -233,7 +231,6 @@ export const convertPathsToSvg = (paths: Path[], scale: number) => {
       .join(" ");
     const svgStr =
       `M${path[0][0] * scale} ${path[0][1] * scale} L` + stringPoints;
-    console.log(svgStr);
     // Add a new Path2D to the canvas to be able to call isPointInPath for the remaining paths
     const pathObj = new Path2D(svgStr);
     ctx!.fill(pathObj);

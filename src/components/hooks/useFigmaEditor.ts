@@ -13,6 +13,8 @@ export default function useFigmaEditor(image: Blob) {
   const [clicks, setClicks] = React.useState<{ x: number; y: number }[]>([]);
   // the masked image
   const [mask, setMask] = React.useState<Tensor | null>(null);
+  const [maskImage, setMaskImage] = React.useState<Blob | null>(null);
+  const [originalImage, setOriginalImage] = React.useState<Blob | null>(null);
   const [renderedImage, setRenderedImage] = React.useState<Blob | null>(null);
   const predMasksRef = React.useRef<Tensor[]>([]);
 
@@ -23,6 +25,22 @@ export default function useFigmaEditor(image: Blob) {
       setBitmap(img);
     };
   }, [image]);
+
+  React.useEffect(() => {
+    if (!bitmap) {
+      return;
+    }
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+    ctx.drawImage(bitmap, 0, 0);
+    canvas.convertToBlob().then(setOriginalImage);
+    return () => {
+      setOriginalImage(null);
+    }
+  }, [bitmap]);
 
   React.useEffect(() => {
     if (!bitmap) {
@@ -134,6 +152,33 @@ export default function useFigmaEditor(image: Blob) {
     if (!bitmap || !traced) {
       return;
     }
+    // convert the traced mask to a black/white image by drawing the mask on a canvas
+    const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      return;
+    }
+    // fill the background with black
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, bitmap.width, bitmap.height);
+    // fill the mask with white
+    ctx.fillStyle = "white";
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 10;
+    for (const path of traced) {
+      ctx.fill(new Path2D(path));
+      ctx.stroke(new Path2D(path));
+    }
+    canvas.convertToBlob().then(setMaskImage);
+    return () => {
+      setMaskImage(null);
+    };
+  }, [bitmap, traced]);
+
+  React.useEffect(() => {
+    if (!bitmap || !traced) {
+      return;
+    }
     const offscreen = new OffscreenCanvas(bitmap.width, bitmap.height);
     const offscreenCtx = offscreen.getContext("2d");
     if (!offscreenCtx) return;
@@ -150,10 +195,15 @@ export default function useFigmaEditor(image: Blob) {
     bitmap,
     mask,
     traced,
+    maskImage,
+    originalImage,
     renderedImage,
     isLoading: !bitmap || !embeddings,
     onClick(x: number, y: number, type: "left" | "right") {
       setClicks((clicks) => [...clicks, { x, y }]);
+    },
+    onReset() {
+      setClicks([]);
     },
     onUndo() {
       setClicks((clicks) => clicks.slice(0, -1));

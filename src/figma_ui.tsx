@@ -50,6 +50,10 @@ window.addEventListener("message", (event) => {
         .magic-copy-toolbar button:hover {
           background: #eeeeee;
         }
+
+        .magic-copy-toolbar button.magic-copy-mode-button:hover {
+          background: transparent;
+        }
         
         .magic-copy-loading {
           color: black;
