@@ -30,6 +30,8 @@ export default function Figma({
     isUndoable,
   } = useFigmaEditor(image);
 
+  const [inpaintingProgress, setInpaintingProgress] = React.useState(1.0);
+
   React.useEffect(() => {
     if (!bitmap) return;
     const scaleToFit = Math.min(800 / bitmap.width, 600 / bitmap.height);
@@ -51,6 +53,8 @@ export default function Figma({
   }
 
   const scaleToFit = Math.min(800 / bitmap.width, 600 / bitmap.height);
+
+  console.log(inpaintingProgress);
 
   return (
     <>
@@ -86,7 +90,8 @@ export default function Figma({
           }}
           isApplyDisabled={false}
           onErase={async () => {
-            if (!maskImage || !originalImage) return;
+            console.log(inpaintingProgress);
+            if (!maskImage || !originalImage || inpaintingProgress !== 1) return;
             const cropped = await pairwiseImageCrop(originalImage, maskImage,
               {
                 width: bitmap.width, height: bitmap.height
@@ -97,6 +102,16 @@ export default function Figma({
               console.log('could not crop, no mask');
               return;
             }
+            let progress = 0;
+            let timer = 0;
+            const updateProgress = () => {
+              progress += 0.03;
+              setInpaintingProgress(progress);
+              if (progress < 0.8) {
+                timer = setTimeout(updateProgress, 1000);
+              }
+            }
+            updateProgress();
             // make a post request to the server
             const formData = new FormData();
             formData.append("image", cropped.original);
@@ -117,6 +132,13 @@ export default function Figma({
             if (!patched) return;
             setImage(patched);
             onReset();
+            setInpaintingProgress(1.0);
+            setTimeout(() => {
+              setInpaintingProgress(0.0);
+            }, 1000);
+            if (timer) {
+              clearTimeout(timer);
+            }
           }}
           isEraseDisabled={!maskImage || !originalImage}
         />
@@ -137,13 +159,30 @@ export default function Figma({
           }
           onClick((x * scale) / scaleToFit, (y * scale) / scaleToFit, "left");
         }}
-        mode={mode}
-      />
+        mode={mode}>
+        <div style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: inpaintingProgress > 0 && inpaintingProgress < 1 ? "6px" : 0,
+          transition: "height 0.2s ease-in-out",
+          backgroundColor: "rgba(62, 67, 195, 0.31)",
+        }}>
+          <div style={{
+            backgroundColor: "#3E43C3",
+            height: "100%",
+            width: `${inpaintingProgress * 100}%`,
+            transition: "width 1s linear",
+          }}>
+          </div>
+        </div>
+      </Renderer>
       {showAd && (
         <div className="magic-copy-ad">
           <div>
             <a href="https://forms.gle/Y7EiPpELcLtjmJrw9">Give us feedback.</a>
-            We're working onthe next thing.
+            We're working on the next thing.
           </div>
           <div>
             <button
@@ -173,14 +212,15 @@ function Renderer({
   svgScale,
   onMaskClick,
   mode,
-}: {
+  children,
+}: React.PropsWithChildren<{
   traced: string[] | null;
   image: HTMLImageElement;
   canvasScale: number;
   svgScale: number;
   onMaskClick: (x: number, y: number) => void;
   mode: "edit" | "preview";
-}) {
+}>) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   React.useEffect(() => {
@@ -229,6 +269,7 @@ function Renderer({
         height: height,
       }}
     >
+      {children}
       <div
         style={{
           position: "absolute",
