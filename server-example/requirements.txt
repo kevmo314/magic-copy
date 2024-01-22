@@ -23,7 +23,7 @@ nvidia-cusolver-cu11==11.4.0.1
 nvidia-cusparse-cu11==11.7.4.91
 nvidia-nccl-cu11==2.14.3
 nvidia-nvtx-cu11==11.7.91
-Pillow==10.0.1
+Pillow==10.2.0
 requests==2.31.0
 segment-anything==1.0
 sympy==1.11.1
