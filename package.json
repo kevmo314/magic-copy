@@ -24,7 +24,7 @@
     "@figma/plugin-typings": "^1.68.0",
     "@types/chrome": "0.0.237",
     "@types/firefox-webext-browser": "^111.0.1",
-    "@types/offscreencanvas": "^2019.7.0",
+    "@types/offscreencanvas": "^2019.7.3",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.18",
     "copy-webpack-plugin": "^12.0.2",
