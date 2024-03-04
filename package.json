@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@figma/plugin-typings": "^1.68.0",
-    "@types/chrome": "0.0.237",
+    "@types/chrome": "0.0.262",
     "@types/firefox-webext-browser": "^111.0.1",
     "@types/offscreencanvas": "^2019.7.0",
     "@types/react": "^18.2.6",
